@@ -1,0 +1,307 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, Arial, sans-serif;
+  color: #2b2b2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Картинку кладём в src/ рядом с этим файлом. Относительный url('./StadiumBG.jpg')
+   Vite сам обработает: захэширует и проставит правильный путь с учётом base. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("./StadiumBG.jpg") center center / cover no-repeat;
+  filter: brightness(0.7) saturate(1.05);
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 42%, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.55) 75%);
+  z-index: -1;
+}
+
+.app {
+  width: 320px;
+  text-align: center;
+  padding: 28px 20px 32px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.app-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #f3f3f1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  margin: 0 0 4px;
+}
+
+.app-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 4px;
+  letter-spacing: 0.5px;
+}
+
+.stopwatch {
+  position: relative;
+  width: 260px;
+  margin: 56px auto 24px;
+}
+
+.timer-wrapper {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 16px auto 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #d9d9dc 38%, #b5b5b9 70%, #8e8e92 100%);
+  box-shadow:
+    inset 0 0 0 6px #c4c4c8,
+    inset 0 0 0 8px #8e8e92,
+    0 4px 10px rgba(0, 0, 0, 0.25);
+  z-index: 0;
+}
+
+.top-button,
+.side-button {
+  position: absolute;
+  border: 1px solid #9a9a9e;
+  background: linear-gradient(180deg, #f5f5f7 0%, #c9c9cd 55%, #aaaaad 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 4px rgba(0, 0, 0, 0.25),
+    0 2px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  z-index: 3;
+}
+
+.top-button {
+  width: 34px;
+  height: 22px;
+  border-radius: 8px 8px 3px 3px;
+  left: 50%;
+  top: 50%;
+  margin-left: -17px;
+  margin-top: -11px;
+  transform: translateY(-128px);
+  transform-origin: center;
+}
+
+.side-button {
+  width: 30px;
+  height: 20px;
+  border-radius: 7px 7px 3px 3px;
+  left: 50%;
+  top: 50%;
+  margin-left: -15px;
+  margin-top: -10px;
+  transform: rotate(-45deg) translateY(-128px);
+  transform-origin: center;
+}
+
+.top-button:hover,
+.side-button:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #d4d4d8 55%, #b6b6b9 100%);
+}
+
+.top-button:active {
+  box-shadow:
+    inset 0 3px 5px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.5);
+  transform: translateY(-128px) translateY(3px) scale(0.96);
+}
+
+.side-button:active {
+  box-shadow:
+    inset 0 3px 5px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.5);
+  transform: rotate(-45deg) translateY(-128px) translateY(3px) scale(0.96);
+}
+
+.top-button:disabled,
+.side-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.timer-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  background: #fbfbf9;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 0;
+}
+
+.dial-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 240px;
+  transform: rotate(-90deg);
+  z-index: 1;
+}
+
+.hint {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.6));
+}
+
+.hint.hidden {
+  opacity: 0;
+}
+
+.hint-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1a1a1c;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 5px 11px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.hint-top {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateY(-128px) translateY(-30px);
+}
+
+.hint-side {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(-90.5px, -90.5px) translate(-13px, -41px);
+}
+
+.tick {
+  stroke: #444448;
+}
+
+.tick.major {
+  stroke: #c0392b;
+  stroke-width: 2;
+}
+
+.track {
+  fill: none;
+  stroke: #d8d8d4;
+  stroke-width: 6;
+}
+
+.progress {
+  fill: none;
+  stroke: #c0392b;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.time {
+  font-size: 30px;
+  font-weight: 600;
+  color: #1a1a1c;
+  letter-spacing: 0.5px;
+}
+
+.status {
+  font-size: 12px;
+  color: #6b6b6e;
+  margin-top: 4px;
+  text-transform: lowercase;
+}
+
+.status.running::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c0392b;
+  margin-right: 6px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.minutes-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 8px;
+  pointer-events: auto;
+}
+
+.minutes-row label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(20, 20, 22, 0.35);
+  padding: 1px 8px;
+  border-radius: 0 0 4px 4px;
+}
+
+.minutes-row input {
+  width: 50px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid #b5b5b9;
+  background: #fdfdfc;
+  color: #2b2b2e;
+  font-size: 13px;
+  text-align: center;
+}
+
+.minutes-row input:disabled {
+  opacity: 0.5;
+}
+
+/* уважение к системной настройке «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+  .progress { transition: none; }
+  .status.running::before { animation: none; }
+}
